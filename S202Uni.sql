@@ -42,6 +42,20 @@ SELECT COUNT(alumno_se_matricula_asignatura.id_alumno) FROM alumno_se_matricula_
 
 SELECT COUNT(a.id_alumno) FROM alumno_se_matricula_asignatura a JOIN persona p ON a.id_alumno = p.id WHERE YEAR(p.fecha_nacimiento) = 1999;
 
+SELECT d.nombre, COUNT(p.id_departamento) FROM departamento d  JOIN profesor p;
 
+SELECT d.nombre, COUNT(p.id_departamento) FROM departamento d JOIN profesor p ON d.id = p.id_departamento GROUP BY p.id_departamento;
 
+SELECT d.nombre, COUNT(p.id_departamento) FROM departamento d JOIN profesor p ON d.id = p.id_departamento GROUP BY p.id_departamento UNION SELECT DISTINCT d.nombre, 0 FROM departamento d LEFT JOIN profesor p ON p.id_departamento = d.id WHERE p.id_departamento IS NULL;
 
+SELECT DISTINCT g.nombre, COUNT(a.id_grado) AS "Numero d'assignatures de mes de 40" FROM grado g JOIN asignatura a ON a.id_grado = g.id  GROUP BY a.id_grado HAVING ((SELECT COUNT(a.id_grado) GROUP BY a.id_grado) > 40) UNION SELECT DISTINCT g.nombre, " " FROM grado g JOIN asignatura a ON a.id_grado = g.id  GROUP BY a.id_grado HAVING ((SELECT COUNT(a.id_grado) GROUP BY a.id_grado) < 41); 
+
+SELECT DISTINCT g.nombre, a.tipo, SUM(a.creditos) AS credits FROM grado g JOIN asignatura a ON g.id = a.id_grado GROUP BY a.id_grado, a.tipo;
+
+SELECT DISTINCT c.anyo_inicio, COUNT(a.id_curso_escolar) FROM curso_escolar c JOIN alumno_se_matricula_asignatura a ON c.id = a.id_curso_escolar GROUP BY a.id_curso_escolar;
+
+SELECT DISTINCT pro.id_profesor, p.nombre, p.apellido1, p.apellido2, COUNT(a.id_profesor) FROM profesor pro JOIN persona p ON pro.id_profesor = p.id LEFT JOIN asignatura a ON pro.id_profesor = a.id_profesor GROUP BY pro.id_profesor ORDER BY (SELECT COUNT(a.id_profesor) GROUP BY pro.id_profesor) DESC;
+
+SELECT * FROM persona p JOIN alumno_se_matricula_asignatura a ON p.id = a.id_alumno ORDER BY (p.fecha_nacimiento) DESC LIMIT 1;
+
+SELECT p.nombre, p.apellido1, p.apellido2, d.nombre AS departamento, a.nombre AS assignatura FROM persona p JOIN profesor pro ON p.id = pro.id_profesor JOIN departamento d ON pro.id_departamento = d.id LEFT JOIN asignatura a ON pro.id_profesor = a.id_profesor WHERE a.nombre IS NULL;
